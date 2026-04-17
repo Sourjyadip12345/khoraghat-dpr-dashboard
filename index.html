@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Khoraghat & Babejia DPR Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root,[data-theme="light"]{
+  --color-bg:#f7f6f2;--color-surface:#f9f8f5;--color-surface-2:#fbfbf9;
+  --color-surface-offset:#f3f0ec;--color-surface-dynamic:#e6e4df;
+  --color-divider:#dcd9d5;--color-border:#d4d1ca;
+  --color-text:#28251d;--color-text-muted:#7a7974;--color-text-faint:#bab9b4;
+  --color-primary:#01696f;--color-primary-hover:#0c4e54;
+  --color-primary-highlight:#cedcd8;
+  --color-success:#437a22;--color-success-highlight:#d4dfcc;
+  --color-warning:#964219;--color-warning-highlight:#ddcfc6;
+  --color-error:#a12c7b;--color-error-highlight:#e0ced7;
+  --color-orange:#da7101;--color-gold:#d19900;--color-blue:#006494;
+  --color-purple:#7a39bb;
+  --shadow-sm:0 1px 2px oklch(0.2 0.01 80/0.06);
+  --shadow-md:0 4px 12px oklch(0.2 0.01 80/0.08);
+  --shadow-lg:0 12px 32px oklch(0.2 0.01 80/0.12);
+  --radius-sm:0.375rem;--radius-md:0.5rem;--radius-lg:0.75rem;--radius-xl:1rem;--radius-full:9999px;
+  --space-1:0.25rem;--space-2:0.5rem;--space-3:0.75rem;--space-4:1rem;--space-6:1.5rem;
+  --space-8:2rem;--space-10:2.5rem;--space-12:3rem;--space-16:4rem;
+  --text-xs:clamp(0.75rem,0.7rem + 0.25vw,0.875rem);
+  --text-sm:clamp(0.875rem,0.8rem + 0.35vw,1rem);
+  --text-base:clamp(1rem,0.95rem + 0.25vw,1.125rem);
+  --text-lg:clamp(1.125rem,1rem + 0.75vw,1.5rem);
+  --text-xl:clamp(1.5rem,1.2rem + 1.25vw,2.25rem);
+  --font-body:'Inter',sans-serif;--font-display:'Instrument Serif',Georgia,serif;
+  --transition:180ms cubic-bezier(0.16,1,0.3,1);
+}
+[data-theme="dark"]{
+  --color-bg:#171614;--color-surface:#1c1b19;--color-surface-2:#201f1d;
+  --color-surface-offset:#1d1c1a;--color-surface-dynamic:#2d2c2a;
+  --color-divider:#262523;--color-border:#393836;
+  --color-text:#cdccca;--color-text-muted:#797876;--color-text-faint:#5a5957;
+  --color-primary:#4f98a3;--color-primary-hover:#227f8b;
+  --color-primary-highlight:#313b3b;
+  --color-success:#6daa45;--color-success-highlight:#3a4435;
+  --color-warning:#bb653b;--color-warning-highlight:#564942;
+  --color-error:#d163a7;--color-error-highlight:#4c3d46;
+  --color-orange:#fdab43;--color-gold:#e8af34;--color-blue:#5591c7;--color-purple:#a86fdf;
+  --shadow-sm:0 1px 2px oklch(0 0 0/0.2);
+  --shadow-md:0 4px 12px oklch(0 0 0/0.3);
+  --shadow-lg:0 12px 32px oklch(0 0 0/0.4);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;}
+body{min-height:100dvh;font-family:var(--font-body);font-size:var(--text-base);color:var(--color-text);background:var(--color-bg);line-height:1.6;}
+img,svg{display:block;max-width:100%;}
+button{cursor:pointer;background:none;border:none;font:inherit;color:inherit;}
+a,button,[role="button"]{transition:color var(--transition),background var(--transition),border-color var(--transition),box-shadow var(--transition);}
+.header{background:var(--color-surface);border-bottom:1px solid var(--color-border);padding:var(--space-4) var(--space-8);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow-sm);}
+.logo{display:flex;align-items:center;gap:var(--space-3);}
+.logo-icon{width:36px;height:36px;flex-shrink:0;}
+.logo-text{font-family:var(--font-display);font-size:var(--text-lg);font-weight:500;line-height:1.2;}
+.logo-sub{font-size:var(--text-xs);color:var(--color-text-muted);font-family:var(--font-body);}
+.header-right{display:flex;align-items:center;gap:var(--space-4);}
+.badge{background:var(--color-primary-highlight);color:var(--color-primary);padding:var(--space-1) var(--space-3);border-radius:var(--radius-full);font-size:var(--text-xs);font-weight:600;letter-spacing:0.03em;}
+.theme-toggle{padding:var(--space-2);border-radius:var(--radius-md);color:var(--color-text-muted);}
+.theme-toggle:hover{background:var(--color-surface-offset);color:var(--color-text);}
+.main{max-width:1200px;margin:0 auto;padding:var(--space-8) var(--space-6);}
+.tabs{display:flex;gap:var(--space-2);border-bottom:1px solid var(--color-border);margin-bottom:var(--space-8);}
+.tab{padding:var(--space-3) var(--space-4);font-size:var(--text-sm);color:var(--color-text-muted);border-bottom:2px solid transparent;margin-bottom:-1px;transition:color var(--transition),border-color var(--transition);}
+.tab:hover{color:var(--color-text);}
+.tab.active{color:var(--color-primary);border-bottom-color:var(--color-primary);font-weight:600;}
+.tab-pane{display:none;}
+.tab-pane.active{display:block;}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--space-4);margin-bottom:var(--space-8);}
+.kpi-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-6);box-shadow:var(--shadow-sm);}
+.kpi-label{font-size:var(--text-xs);color:var(--color-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:var(--space-2);}
+.kpi-value{font-size:var(--text-xl);font-weight:700;font-variant-numeric:tabular-nums;line-height:1;margin-bottom:var(--space-1);}
+.kpi-unit{font-size:var(--text-xs);color:var(--color-text-muted);}
+.kpi-card.green .kpi-value{color:var(--color-success);}
+.kpi-card.blue .kpi-value{color:var(--color-blue);}
+.kpi-card.orange .kpi-value{color:var(--color-orange);}
+.kpi-card.gold .kpi-value{color:var(--color-gold);}
+.kpi-card.teal .kpi-value{color:var(--color-primary);}
+.kpi-card.purple .kpi-value{color:var(--color-purple);}
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-6);margin-bottom:var(--space-8);}
+.chart-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--space-6);margin-bottom:var(--space-8);}
+.chart-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-6);box-shadow:var(--shadow-sm);}
+.chart-card.full{grid-column:1/-1;}
+.chart-title{font-size:var(--text-base);font-weight:600;margin-bottom:var(--space-1);}
+.chart-sub{font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-6);}
+.chart-wrap{position:relative;height:260px;}
+table{width:100%;border-collapse:collapse;font-size:var(--text-sm);}
+.table-wrap{overflow-x:auto;border-radius:var(--radius-lg);border:1px solid var(--color-border);}
+th{background:var(--color-surface-offset);color:var(--color-text-muted);font-weight:600;font-size:var(--text-xs);text-transform:uppercase;letter-spacing:0.05em;padding:var(--space-3) var(--space-4);text-align:left;border-bottom:1px solid var(--color-border);}
+td{padding:var(--space-3) var(--space-4);border-bottom:1px solid var(--color-divider);font-variant-numeric:tabular-nums;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--color-surface-offset);}
+.num{text-align:right;}
+.section-head{font-family:var(--font-display);font-size:var(--text-lg);font-weight:500;margin-bottom:var(--space-4);color:var(--color-text);}
+.section-sub{font-size:var(--text-sm);color:var(--color-text-muted);margin-bottom:var(--space-6);margin-top:calc(-1 * var(--space-2));}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:var(--radius-full);font-size:var(--text-xs);font-weight:600;}
+.chip-ok{background:var(--color-success-highlight);color:var(--color-success);}
+.chip-nok{background:var(--color-error-highlight);color:var(--color-error);}
+.chip-obs{background:var(--color-warning-highlight);color:var(--color-warning);}
+.hse-row{display:flex;gap:var(--space-4);margin-bottom:var(--space-8);flex-wrap:wrap;}
+.hse-item{flex:1;min-width:160px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-4) var(--space-6);box-shadow:var(--shadow-sm);}
+.hse-label{font-size:var(--text-xs);color:var(--color-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:var(--space-1);}
+.hse-value{font-size:var(--text-xl);font-weight:700;color:var(--color-primary);font-variant-numeric:tabular-nums;}
+.date-row{display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-6);flex-wrap:wrap;}
+.date-badge{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-md);padding:var(--space-2) var(--space-4);font-size:var(--text-sm);color:var(--color-text-muted);}
+.date-badge strong{color:var(--color-text);}
+.remarks-list{list-style:none;display:flex;flex-direction:column;gap:var(--space-3);}
+.remark-item{background:var(--color-surface);border:1px solid var(--color-border);border-left:3px solid var(--color-primary);border-radius:0 var(--radius-md) var(--radius-md) 0;padding:var(--space-3) var(--space-4);font-size:var(--text-sm);}
+.remark-num{font-weight:700;color:var(--color-primary);margin-right:var(--space-2);}
+@media(max-width:768px){
+  .header{padding:var(--space-3) var(--space-4);}
+  .main{padding:var(--space-6) var(--space-4);}
+  .chart-grid,.chart-grid-3{grid-template-columns:1fr;}
+  .chart-card.full{grid-column:auto;}
+}
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="logo">
+    <svg class="logo-icon" viewBox="0 0 36 36" fill="none" aria-label="ONGC DPR">
+      <circle cx="18" cy="18" r="17" stroke="currentColor" stroke-width="1.5" opacity="0.2"/>
+      <path d="M18 6 L18 30 M10 14 Q18 8 26 14 M10 22 Q18 28 26 22" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="18" cy="18" r="3" fill="var(--color-primary)"/>
+      <path d="M8 18 H12 M24 18 H28" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+    </svg>
+    <div>
+      <div class="logo-text">Khoraghat &amp; Babejia</div>
+      <div class="logo-sub">Daily Production Report &middot; Jorhat Asset &middot; ONGC</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="badge">09 Apr 2026</span>
+    <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+  </div>
+</header>
+<main class="main">
+  <nav class="tabs">
+    <button class="tab active" data-tab="overview">Overview</button>
+    <button class="tab" data-tab="production">Production</button>
+    <button class="tab" data-tab="wells">Wells</button>
+    <button class="tab" data-tab="equipment">Equipment</button>
+    <button class="tab" data-tab="hse">HSE</button>
+  </nav>
+  <section class="tab-pane active" id="overview">
+    <div class="date-row">
+      <span class="date-badge"><strong>Prod. Date:</strong> 9 Apr 2026</span>
+      <span class="date-badge"><strong>DPR Date:</strong> 10 Apr 2026</span>
+      <span class="date-badge"><strong>Area:</strong> Area-II, Jorhat Asset</span>
+      <span class="date-badge"><strong>Surface Team:</strong> ONGC Ltd.</span>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi-card green"><div class="kpi-label">Total Net Oil</div><div class="kpi-value">101</div><div class="kpi-unit">m&sup3;/day (KGH+BJAA)</div></div>
+      <div class="kpi-card blue"><div class="kpi-label">Total Gas Produced</div><div class="kpi-value">78,615</div><div class="kpi-unit">SCM/day</div></div>
+      <div class="kpi-card orange"><div class="kpi-label">Gas Sales (NEGG/AGCL)</div><div class="kpi-value">68,297</div><div class="kpi-unit">SCM compressed</div></div>
+      <div class="kpi-card gold"><div class="kpi-label">Total Liquid</div><div class="kpi-value">287</div><div class="kpi-unit">m&sup3;/day</div></div>
+      <div class="kpi-card teal"><div class="kpi-label">Total Water</div><div class="kpi-value">185</div><div class="kpi-unit">m&sup3;/day</div></div>
+      <div class="kpi-card purple"><div class="kpi-label">Man-hours (LTI-free)</div><div class="kpi-value">10,57,890</div><div class="kpi-unit">cumulative</div></div>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card"><div class="chart-title">Production by Installation</div><div class="chart-sub">Net oil (m&sup3;) per field &mdash; 9 Apr 2026</div><div class="chart-wrap"><canvas id="chartInstallation"></canvas></div></div>
+      <div class="chart-card"><div class="chart-title">Gas Balance &mdash; GGS-1</div><div class="chart-sub">SCM allocation breakdown</div><div class="chart-wrap"><canvas id="chartGasBalance"></canvas></div></div>
+      <div class="chart-card full"><div class="chart-title">Liquid vs. Water vs. Net Oil</div><div class="chart-sub">Volume comparison across installations (m&sup3;)</div><div class="chart-wrap"><canvas id="chartLiqWater"></canvas></div></div>
+    </div>
+    <h2 class="section-head">Key Activities</h2>
+    <ul class="remarks-list">
+      <li class="remark-item"><span class="remark-num">1</span>Installation of Jantapathar process facility skid completed by M/S RM Cutter. Job verified and pending punch points submitted.</li>
+      <li class="remark-item"><span class="remark-num">2</span>M/S AAP GDU equipment installation TPI inspection completed. System is ready for start-up.</li>
+      <li class="remark-item"><span class="remark-num">3</span>IGGL line laying job &mdash; Gauging pigging carried out.</li>
+      <li class="remark-item"><span class="remark-num">4</span>FWN rerouting job for facilitation of IGGL civil work &mdash; Work under progress.</li>
+      <li class="remark-item"><span class="remark-num">5</span>M/S Wizertech CCTV earthing job in progress.</li>
+      <li class="remark-item"><span class="remark-num">6</span>Submersible pump installed. Distribution piping work in progress.</li>
+      <li class="remark-item"><span class="remark-num">7</span>Water filling of 45 m&sup3; Condensate storage tanks for Hydrotesting completed.</li>
+    </ul>
+  </section>
+  <section class="tab-pane" id="production">
+    <h2 class="section-head">Production Summary</h2>
+    <p class="section-sub">Stock positions and dispatch for 9 Apr 2026</p>
+    <div class="kpi-grid" style="margin-bottom:var(--space-6);">
+      <div class="kpi-card green"><div class="kpi-label">KGH GGS-1 Cumulative</div><div class="kpi-value">37,185</div><div class="kpi-unit">m&sup3; (cumulative)</div></div>
+      <div class="kpi-card blue"><div class="kpi-label">KGH GGS-2 Cumulative</div><div class="kpi-value">10,138</div><div class="kpi-unit">m&sup3; (cumulative)</div></div>
+      <div class="kpi-card teal"><div class="kpi-label">NBR GGS Cumulative</div><div class="kpi-value">20,974</div><div class="kpi-unit">m&sup3; (cumulative)</div></div>
+      <div class="kpi-card gold"><div class="kpi-label">Total Cumulative</div><div class="kpi-value">68,297</div><div class="kpi-unit">m&sup3; (all fields)</div></div>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card"><div class="chart-title">Stock Position by Installation</div><div class="chart-sub">Opening &rarr; Closing (m&sup3;)</div><div class="chart-wrap"><canvas id="chartStock"></canvas></div></div>
+      <div class="chart-card"><div class="chart-title">Gas Balance &mdash; GGS-2</div><div class="chart-sub">Transfer, Internal use, Flare (SCM)</div><div class="chart-wrap"><canvas id="chartGasGGS2"></canvas></div></div>
+    </div>
+    <h2 class="section-head" style="margin-top:var(--space-8);">Installation Stock Table</h2>
+    <div class="table-wrap" style="margin-bottom:var(--space-8);">
+      <table><thead><tr><th>Installation</th><th class="num">Opening (m&sup3;)</th><th class="num">Liquid Prod (m&sup3;)</th><th class="num">Dispatch (m&sup3;)</th><th class="num">Closing (m&sup3;)</th><th class="num">Net Oil (m&sup3;)</th></tr></thead>
+      <tbody>
+        <tr><td>KGH GGS-1</td><td class="num">393</td><td class="num">204</td><td class="num">167</td><td class="num">428</td><td class="num">64</td></tr>
+        <tr><td>KGH GGS-2</td><td class="num">103</td><td class="num">65</td><td class="num">66</td><td class="num">102</td><td class="num">24</td></tr>
+        <tr><td>BJAA WHI</td><td class="num">55</td><td class="num">18</td><td class="num">15</td><td class="num">56</td><td class="num">13</td></tr>
+        <tr><td>Jantapathar</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
+      </tbody></table>
+    </div>
+    <h2 class="section-head">Gas Compressor Status</h2>
+    <div class="table-wrap">
+      <table><thead><tr><th>Compressor</th><th class="num">Running Hrs</th><th class="num">Inlet (SCM)</th><th class="num">Outlet (SCM)</th><th class="num">Fuel Gas (SCM)</th></tr></thead>
+      <tbody>
+        <tr><td>KGH GGS1 IGC</td><td class="num">0.0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
+        <tr><td>KGH GGS1 New Hired GLC</td><td class="num">24</td><td class="num">73,796</td><td class="num">68,297</td><td class="num">3,930</td></tr>
+        <tr><td>GGS1 Gas Sale Comp NEGG</td><td class="num">0.0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
+        <tr><td>BJAA Gas Sale Comp NEGG</td><td class="num">0.0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
+        <tr><td><strong>Total</strong></td><td class="num">&mdash;</td><td class="num"><strong>73,796</strong></td><td class="num"><strong>68,297</strong></td><td class="num"><strong>3,930</strong></td></tr>
+      </tbody></table>
+    </div>
+  </section>
+  <section class="tab-pane" id="wells">
+    <h2 class="section-head">Well Parameters &mdash; KGH GGS-1</h2>
+    <p class="section-sub">Bean, CHP, THP in kgf/cm&sup2; &middot; Status as of 9 Apr 2026</p>
+    <div class="table-wrap" style="margin-bottom:var(--space-8);">
+      <table><thead><tr><th>Well</th><th>Mode</th><th class="num">Bean (mm)</th><th class="num">CHP</th><th class="num">THP</th><th class="num">Flowing Hrs</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>KH35Z</td><td>GL WB</td><td class="num">0</td><td class="num">115</td><td class="num">116</td><td class="num">0.00</td><td><span class="chip chip-obs">Flowing</span></td></tr>
+        <tr><td>KH01</td><td>GL WB</td><td class="num">52</td><td class="num">8</td><td class="num">7</td><td class="num">24.00</td><td><span class="chip chip-ok">Flowing</span></td></tr>
+        <tr><td>KH03</td><td>GL WB</td><td class="num">43</td><td class="num">8</td><td class="num">7</td><td class="num">24.00</td><td><span class="chip chip-ok">Flowing</span></td></tr>
+        <tr><td>KH05</td><td>GL WB</td><td class="num">44</td><td class="num">8</td><td class="num">7</td><td class="num">24.00</td><td><span class="chip chip-ok">Flowing</span></td></tr>
+        <tr><td>KH06</td><td>GL WB</td><td class="num">54</td><td class="num">8</td><td class="num">7</td><td class="num">24.00</td><td><span class="chip chip-ok">Flowing</span></td></tr>
+        <tr><td>KH08</td><td>GL WB</td><td class="num">51</td><td class="num">8</td><td class="num">6</td><td class="num">24.00</td><td><span class="chip chip-ok">Flowing</span></td></tr>
+        <tr><td>KH18A</td><td>GL</td><td class="num">10</td><td class="num">26</td><td class="num">8</td><td class="num">24.00</td><td><span class="chip chip-ok">Flowing</span></td></tr>
+        <tr><td>KH32</td><td>GL</td><td class="num">8</td><td class="num">56</td><td class="num">15</td><td class="num">24.00</td><td><span class="chip chip-ok">Flowing</span></td></tr>
+        <tr><td>KH40</td><td>GL</td><td class="num">12</td><td class="num">52</td><td class="num">8</td><td class="num">24.00</td><td><span class="chip chip-ok">Flowing</span></td></tr>
+        <tr><td>KH36Z</td><td>SF</td><td class="num">4</td><td class="num">114</td><td class="num">109</td><td class="num">0.00</td><td><span class="chip chip-nok">Non-Flowing</span></td></tr>
+        <tr><td>KH41</td><td>SF</td><td class="num">6</td><td class="num">138</td><td class="num">101</td><td class="num">24.00</td><td><span class="chip chip-ok">Flowing</span></td></tr>
+        <tr><td>KH43</td><td>GL</td><td class="num">7</td><td class="num">48</td><td class="num">15</td><td class="num">24.00</td><td><span class="chip chip-ok">Flowing</span></td></tr>
+        <tr><td>KH49</td><td>GL</td><td class="num">10</td><td class="num">32</td><td class="num">1</td><td class="num">6.00</td><td><span class="chip chip-obs">Non-Flowing</span></td></tr>
+      </tbody></table>
+    </div>
+    <h2 class="section-head">Well Parameters &mdash; KGH GGS-2</h2>
+    <div class="table-wrap" style="margin-bottom:var(--space-8);">
+      <table><thead><tr><th>Well</th><th>Mode</th><th class="num">Bean</th><th class="num">CHP</th><th class="num">THP</th><th class="num">Flowing Hrs</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>KH12</td><td>SF</td><td class="num">8</td><td class="num">27</td><td class="num">19</td><td class="num">24.00</td><td><span class="chip chip-ok">Flowing</span></td></tr>
+        <tr><td>KH26</td><td>GL</td><td class="num">8</td><td class="num">42</td><td class="num">5</td><td class="num">24.00</td><td><span class="chip chip-obs">Under Obs.</span></td></tr>
+        <tr><td>KH19Z</td><td>GL</td><td class="num">10</td><td class="num">51</td><td class="num">8</td><td class="num">24.00</td><td><span class="chip chip-ok">Flowing</span></td></tr>
+        <tr><td>KH22Z</td><td>SF</td><td class="num">7</td><td class="num">0</td><td class="num">34</td><td class="num">24.00</td><td><span class="chip chip-ok">Flowing</span></td></tr>
+        <tr><td>KH23Z</td><td>GL WB</td><td class="num">48</td><td class="num">5</td><td class="num">4</td><td class="num">24.00</td><td><span class="chip chip-ok">Flowing</span></td></tr>
+        <tr><td>KH17</td><td>WI</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">0.00</td><td><span class="chip chip-nok">Non-Flowing</span></td></tr>
+        <tr><td>KH29Z</td><td>&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">0.00</td><td><span class="chip chip-nok">Not Installed</span></td></tr>
+      </tbody></table>
+    </div>
+    <h2 class="section-head">Well Parameters &mdash; BJAA WHI</h2>
+    <div class="table-wrap">
+      <table><thead><tr><th>Well</th><th>Mode</th><th class="num">Bean</th><th class="num">CHP</th><th class="num">THP</th><th class="num">Flowing Hrs</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>BJ01Z</td><td>SF</td><td class="num">6</td><td class="num">62</td><td class="num">14</td><td class="num">24.00</td><td><span class="chip chip-ok">Flowing</span></td></tr>
+        <tr><td>BJ02</td><td>SF WB</td><td class="num">35</td><td class="num">1</td><td class="num">1</td><td class="num">0.00</td><td><span class="chip chip-nok">Non-Flowing</span></td></tr>
+        <tr><td>SU04Z</td><td>SRP WB</td><td class="num">2</td><td class="num">2</td><td class="num">2</td><td class="num">24.00</td><td><span class="chip chip-ok">Flowing</span></td></tr>
+      </tbody></table>
+    </div>
+  </section>
+  <section class="tab-pane" id="equipment">
+    <h2 class="section-head">Mechanical Equipment Status</h2>
+    <p class="section-sub">As reported on 9 Apr 2026</p>
+    <div class="table-wrap" style="margin-bottom:var(--space-8);">
+      <table><thead><tr><th>Installation</th><th>Equipment</th><th>Status</th><th>Remarks</th></tr></thead>
+      <tbody>
+        <tr><td>KGH GGS-1</td><td>TPL-A, B, C</td><td><span class="chip chip-ok">OK</span></td><td>TPL-A force feed lubricator pulley damaged. Sent to Base Mechanical 02.04.2026</td></tr>
+        <tr><td>KGH GGS-1</td><td>DG Set</td><td><span class="chip chip-ok">OK</span></td><td>HMI display not working</td></tr>
+        <tr><td>KGH GGS-1</td><td>GG-1, GG-2</td><td><span class="chip chip-ok">OK</span></td><td>&mdash;</td></tr>
+        <tr><td>KGH GGS-2</td><td>TPL-A, TPL-B</td><td><span class="chip chip-ok">OK</span></td><td>TPL-A observed low discharge</td></tr>
+        <tr><td>KGH GGS-2</td><td>Triplex Pump</td><td><span class="chip chip-nok">NOT OK</span></td><td>&mdash;</td></tr>
+        <tr><td>KGH GGS-2</td><td>DG Set-1</td><td><span class="chip chip-ok">OK</span></td><td>&mdash;</td></tr>
+        <tr><td>BJAA WHI</td><td>Engine FWP P101/P102</td><td><span class="chip chip-ok">OK</span></td><td>&mdash;</td></tr>
+        <tr><td>BJAA WHI</td><td>Loading Pump-1</td><td><span class="chip chip-obs">OBS</span></td><td>Observed leakage from gland packing. To be attended.</td></tr>
+        <tr><td>BJAA WHI</td><td>Dozing Pump-B</td><td><span class="chip chip-nok">NOT OK</span></td><td>Sent to base office for maintenance 04.09.2025</td></tr>
+        <tr><td>KGH GGS-1</td><td>Area Gas Monitor</td><td><span class="chip chip-nok">NOT OK</span></td><td>1 no. faulty; 2 adapter nos. not working</td></tr>
+        <tr><td>KGH GGS-2</td><td>Area Monitor Charger</td><td><span class="chip chip-nok">NOT OK</span></td><td>1 no. charger faulty</td></tr>
+        <tr><td>KGH GGS-1</td><td>HVLRM</td><td><span class="chip chip-nok">NOT OK</span></td><td>HVLRM near 1000 m&sup3; tank faulty</td></tr>
+      </tbody></table>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card"><div class="chart-title">Running Hours by Unit</div><div class="chart-sub">GGS-1 key equipment &mdash; 9 Apr 2026</div><div class="chart-wrap"><canvas id="chartRunningHrs"></canvas></div></div>
+      <div class="chart-card"><div class="chart-title">Equipment Status Distribution</div><div class="chart-sub">OK / NOT OK / Under Observation</div><div class="chart-wrap"><canvas id="chartEquipStatus"></canvas></div></div>
+    </div>
+    <h2 class="section-head" style="margin-top:var(--space-4);">Chemical Stock Position</h2>
+    <div class="table-wrap">
+      <table><thead><tr><th>Chemical</th><th class="num">Opening</th><th class="num">Consumption</th><th class="num">Closing</th><th>Unit</th></tr></thead>
+      <tbody>
+        <tr><td>Demulsifier</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td>L</td></tr>
+        <tr><td>Xylene</td><td class="num">250</td><td class="num">0</td><td class="num">250</td><td>L</td></tr>
+        <tr><td>Surfactant</td><td class="num">537</td><td class="num">8</td><td class="num">529</td><td>L</td></tr>
+        <tr><td>KCL</td><td class="num">3100</td><td class="num">0</td><td class="num">3100</td><td>Kg</td></tr>
+        <tr><td>EGMBE</td><td class="num">2434</td><td class="num">1</td><td class="num">2433</td><td>L</td></tr>
+        <tr><td>HSD</td><td class="num">654</td><td class="num">15</td><td class="num">639</td><td>L</td></tr>
+      </tbody></table>
+    </div>
+  </section>
+  <section class="tab-pane" id="hse">
+    <h2 class="section-head">HSE Summary</h2>
+    <div class="hse-row">
+      <div class="hse-item"><div class="hse-label">Man-hours Today</div><div class="hse-value">216</div></div>
+      <div class="hse-item"><div class="hse-label">LTI-Free Man-hours</div><div class="hse-value">10,57,890</div></div>
+      <div class="hse-item"><div class="hse-label">LTI Status</div><div class="hse-value" style="color:var(--color-success)">NIL</div></div>
+      <div class="hse-item"><div class="hse-label">Accident Free Days</div><div class="hse-value">62,010</div></div>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card"><div class="chart-title">Accident-Free Days by Installation</div><div class="chart-sub">SAP Doc No: 579293</div><div class="chart-wrap"><canvas id="chartIncidents"></canvas></div></div>
+      <div class="chart-card"><div class="chart-title">Hazardous Waste Generation</div><div class="chart-sub">MT / KL &mdash; 9 Apr 2026</div><div class="chart-wrap"><canvas id="chartWaste"></canvas></div></div>
+    </div>
+    <h2 class="section-head" style="margin-top:var(--space-4);">Treated Effluent &mdash; ETP Data</h2>
+    <div class="table-wrap" style="margin-bottom:var(--space-8);">
+      <table><thead><tr><th>Parameter</th><th class="num">Value</th><th>Unit</th></tr></thead>
+      <tbody>
+        <tr><td>OIW (Oil-in-Water)</td><td class="num">2.19</td><td>ppm</td></tr>
+        <tr><td>Iron</td><td class="num">0.06</td><td>mg/L</td></tr>
+        <tr><td>TSS</td><td class="num">1</td><td>ppm</td></tr>
+        <tr><td>Salinity</td><td class="num">1811.7</td><td>ppm</td></tr>
+        <tr><td>Turbidity</td><td class="num">1.07</td><td>NTU</td></tr>
+        <tr><td>pH</td><td class="num">7.39</td><td>&mdash;</td></tr>
+        <tr><td>Chlorine</td><td class="num">1.21</td><td>ppm</td></tr>
+        <tr><td>Effluent Received</td><td class="num">158.0</td><td>m&sup3;</td></tr>
+        <tr><td>Effluent Treated</td><td class="num">156.0</td><td>m&sup3;</td></tr>
+        <tr><td>Volume Disposed</td><td class="num">99.0</td><td>m&sup3;</td></tr>
+        <tr><td>Injection Pressure</td><td class="num">115</td><td>kgf/cm&sup2;</td></tr>
+        <tr><td>Volume Injected</td><td class="num">57.0</td><td>m&sup3;</td></tr>
+      </tbody></table>
+    </div>
+    <h2 class="section-head">Tanker Movement</h2>
+    <div class="table-wrap">
+      <table><thead><tr><th>Vehicle</th><th class="num">No. of Trips</th><th>From</th><th>To</th></tr></thead>
+      <tbody>
+        <tr><td>AS 04CC 1658</td><td class="num">1</td><td>BJAA WHI</td><td>NBR</td></tr>
+        <tr><td>AS 03 CC 8831</td><td class="num">1</td><td>BJAA WHI</td><td>&mdash;</td></tr>
+        <tr><td>AS 05 AC 1095</td><td class="num">0</td><td>KGH GGS-2</td><td>BJAA WHI</td></tr>
+      </tbody></table>
+    </div>
+  </section>
+</main>
+<script>
+(function(){
+  const t=document.querySelector('[data-theme-toggle]'),r=document.documentElement;
+  let d=r.getAttribute('data-theme')||'dark';
+  t&&t.addEventListener('click',()=>{
+    d=d==='dark'?'light':'dark';r.setAttribute('data-theme',d);
+    t.innerHTML=d==='dark'?'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>':'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>';
+    renderCharts();
+  });
+})();
+document.querySelectorAll('.tab').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
+function getCSS(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+const chartInstances={};
+function renderCharts(){
+  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+  const textColor=getCSS('--color-text');
+  const mutedColor=getCSS('--color-text-muted');
+  const gridColor=isDark?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.07)';
+  const defaults={color:textColor,plugins:{legend:{labels:{color:textColor,font:{family:'Inter',size:12}}}},scales:{x:{ticks:{color:mutedColor},grid:{color:gridColor}},y:{ticks:{color:mutedColor},grid:{color:gridColor}}}};
+  function make(id,config){if(chartInstances[id]){chartInstances[id].destroy();}const ctx=document.getElementById(id);if(!ctx)return;chartInstances[id]=new Chart(ctx,config);}
+  const C=isDark?{teal:'#4f98a3',green:'#6daa45',orange:'#fdab43',gold:'#e8af34',blue:'#5591c7',purple:'#a86fdf',red:'#d163a7',warn:'#bb653b'}:{teal:'#01696f',green:'#437a22',orange:'#da7101',gold:'#d19900',blue:'#006494',purple:'#7a39bb',red:'#a12c7b',warn:'#964219'};
+  make('chartInstallation',{type:'bar',data:{labels:['KGH GGS-1','KGH GGS-2','BJAA WHI','Jantapathar'],datasets:[{label:'Net Oil (m³)',data:[64,24,13,0],backgroundColor:[C.teal,C.blue,C.orange,C.gold],borderRadius:6,borderSkipped:false}]},options:{...defaults,responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+  make('chartGasBalance',{type:'doughnut',data:{labels:['Transfer to NBR','Make-up Gas','Internal (GC)','Internal (HT)','Flared','GGS-1 Safety Flare'],datasets:[{data:[20974,1366,3930,1252,45324,2433],backgroundColor:[C.blue,C.gold,C.orange,C.purple,C.red,C.warn],borderWidth:0,hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:textColor,font:{size:10},boxWidth:12}}}}});
+  make('chartLiqWater',{type:'bar',data:{labels:['KGH GGS-1','KGH GGS-2','BJAA WHI'],datasets:[{label:'Liquid (m³)',data:[204,65,18],backgroundColor:C.blue+'cc',borderRadius:4},{label:'Water (m³)',data:[139,41,5],backgroundColor:C.warn+'cc',borderRadius:4},{label:'Net Oil (m³)',data:[64,24,13],backgroundColor:C.green+'cc',borderRadius:4}]},options:{...defaults,responsive:true,maintainAspectRatio:false}});
+  make('chartStock',{type:'bar',data:{labels:['KGH GGS-1','KGH GGS-2','BJAA WHI'],datasets:[{label:'Opening (m³)',data:[393,103,55],backgroundColor:C.teal+'99',borderRadius:4},{label:'Closing (m³)',data:[428,102,56],backgroundColor:C.teal,borderRadius:4}]},options:{...defaults,responsive:true,maintainAspectRatio:false}});
+  make('chartGasGGS2',{type:'doughnut',data:{labels:['Transfer to GGS-1','Internal (BHHT)','Flare'],datasets:[{data:[30069,389,1417],backgroundColor:[C.blue,C.orange,C.red],borderWidth:0,hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:textColor,font:{size:11},boxWidth:12}}}}});
+  make('chartRunningHrs',{type:'bar',data:{labels:['TPL-A','TPL-B','TPL-C','DG Set','GG-1','GG-2','AAP PKG-02','AAP PKG-03'],datasets:[{label:'Running Hrs',data:[0,24,24,24,24,24,24,24],backgroundColor:C.teal,borderRadius:6,borderSkipped:false}]},options:{...defaults,responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},indexAxis:'y'}});
+  make('chartEquipStatus',{type:'doughnut',data:{labels:['OK','NOT OK','Under Observation'],datasets:[{data:[18,4,3],backgroundColor:[C.green,C.red,C.warn],borderWidth:0,hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:textColor,font:{size:11},boxWidth:12}}}}});
+  make('chartIncidents',{type:'bar',data:{labels:['KGH GGS-1','KGH GGS-2','BJAA WHI'],datasets:[{label:'Accident Free Days',data:[5772,1373,1891],backgroundColor:[C.teal,C.blue,C.orange],borderRadius:6}]},options:{...defaults,responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+  make('chartWaste',{type:'bar',data:{labels:['Oil Recovery (KL)','Sludge w/ Oil (MT)','Spent Oil (KL)','Cotton Rags (KG)'],datasets:[{label:'Generation',data:[0,0.005,1.503,1.5],backgroundColor:[C.teal,C.warn,C.orange,C.gold],borderRadius:6}]},options:{...defaults,responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+}
+document.addEventListener('DOMContentLoaded',renderCharts);
+</script>
+</body>
+</html>
